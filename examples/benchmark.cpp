@@ -68,7 +68,7 @@ void benchmark_cleanup(recs::World& world) {
 int main() {
     recs::World world{};
 
-    benchmark_creation(world, 100'000);
+    benchmark_creation(world, 10'000'000);
     benchmark_modification(world);
     benchmark_iteration(world);
     benchmark_cleanup(world);

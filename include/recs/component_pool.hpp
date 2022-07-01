@@ -18,6 +18,8 @@ namespace recs {
         virtual void clear() = 0;
         virtual size_t size() const = 0;
         virtual unique_generator<EntityId> entity_ids() = 0;
+
+        virtual ~IComponentPool() = default;
     };
 
     template <typename Component>
