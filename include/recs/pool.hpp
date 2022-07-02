@@ -3,27 +3,27 @@
 
 #include <cassert>
 #include <type_traits>
-#include <unordered_map>
 
 #include <coro/unique_generator.h>
 
+#include "detail.hpp"
+#include "component_container.hpp"
+
 
 namespace recs {
-    using EntityId = int64_t;
-
-
-    struct IComponentPool {
+    struct IPool {
         virtual bool has(EntityId entity_id) const = 0;
         virtual void del(EntityId entity_id) = 0;
         virtual void clear() = 0;
         virtual size_t size() const = 0;
         virtual unique_generator<EntityId> entity_ids() = 0;
 
-        virtual ~IComponentPool() = default;
+        virtual ~IPool() = default;
     };
 
+
     template <typename Component>
-    struct ComponentPool : public IComponentPool {
+    struct Pool : public IPool {
         Component& get(EntityId entity_id) {
             if constexpr (std::is_default_constructible_v<Component>) {
                 return m_components[entity_id];
@@ -72,8 +72,12 @@ namespace recs {
             }
         }
 
+        auto& container() {
+            return m_components;
+        }
+
     private:
-        std::unordered_map<EntityId, Component> m_components;
+        typename ComponentContainer<Component>::Type m_components;
     };
 }
 

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <map>
 
 #include <recs/world.hpp>
 
@@ -48,8 +49,22 @@ void render_system(recs::World& world) {
 }
 
 
+struct Transform {};
+
+
+template <>
+struct recs::ComponentContainer<Transform> {   // There's a way to provide a custom container for components.
+    using Type = std::map<int64_t, Transform>;   // For example for Transform it could be KD-Tree.
+};
+
+
 int main() {
     recs::World world{};
+
+    for (int i{0}; i < 10'000'000; ++i) {
+        auto entity{world.new_entity()};
+        entity.get<Transform>();
+    }
 
     auto entity1{world.new_entity()};
     entity1.get<Jumpable>();  // Entity::get creates component if it doesn't exist.
@@ -60,6 +75,7 @@ int main() {
     auto entity2{world.new_entity()};
     entity2.get<Jumpable>();
     entity2.get<Position>();
+    entity2.get<Transform>();
 
     std::cout << entity1.has<Jumpable, Position>() << '\n';
     std::cout << entity2.has<Jumpable, Position>() << '\n';
